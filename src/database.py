@@ -10,7 +10,7 @@ class DatabaseHandler:
     def __init__(self, db_path='sqlite:///ideal_function_mapper.db'):
         self.engine = create_engine(db_path)
 
-    def save_dataframe(self, df: pd.DataFrame, table_name: str):
+    def save_to_db(self, table_name: str, df: pd.DataFrame):
         """
         Saves a pandas DataFrame to the SQLite database.
         

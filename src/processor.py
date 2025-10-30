@@ -79,7 +79,7 @@
 
 import numpy as np
 import pandas as pd
-from src.exceptions import MappingException
+from exceptions import MappingException
 
 
 class FunctionMapper:
