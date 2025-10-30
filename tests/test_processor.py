@@ -1,26 +1,43 @@
+import sys
+import os
+import unittest
 import pandas as pd
-from src.processor import FunctionMapper, TestDataMapper
-from src.loader import load_train_data, load_ideal_data, load_test_data
-from src.exceptions import MappingException
 
-train_df = load_train_data()
-ideal_df = load_ideal_data()
-test_df = load_test_data()
+# Add src directory to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-def test_find_best_fit_returns_four():
-    mapper = FunctionMapper(train_df, ideal_df)
-    matches = mapper.find_best_fit()
-    assert len(matches) == 4
-    for key, val in matches.items():
-        assert key.startswith("y") and val.startswith("y")
+from processor import FunctionMapper, TestDataMapper
+from loader import load_train_data, load_ideal_data, load_test_data
+from exceptions import MappingException
 
-def test_test_mapper_mapping_format():
-    fm = FunctionMapper(train_df, ideal_df)
-    matches = fm.find_best_fit()
 
-    test_mapper = TestDataMapper(matches, train_df)
-    result_df = test_mapper.map(test_df, ideal_df)
+class TestProcessor(unittest.TestCase):
+    
+    @classmethod
+    def setUpClass(cls):
+        cls.train_df = load_train_data()
+        cls.ideal_df = load_ideal_data()
+        cls.test_df = load_test_data()
 
-    assert not result_df.empty
-    assert "ideal_function" in result_df.columns
-    assert "deviation" in result_df.columns
+    def test_find_best_fit_returns_four(self):
+        mapper = FunctionMapper(self.train_df, self.ideal_df)
+        matches = mapper.find_best_fit()
+        self.assertEqual(len(matches), 4)
+        for key, val in matches.items():
+            self.assertTrue(key.startswith("y"))
+            self.assertTrue(val.startswith("y"))
+
+    def test_test_mapper_mapping_format(self):
+        fm = FunctionMapper(self.train_df, self.ideal_df)
+        matches = fm.find_best_fit()
+
+        test_mapper = TestDataMapper(matches, self.train_df)
+        result_df = test_mapper.map(self.test_df, self.ideal_df)
+
+        self.assertFalse(result_df.empty)
+        self.assertIn("ideal_function", result_df.columns)
+        self.assertIn("deviation", result_df.columns)
+
+
+if __name__ == '__main__':
+    unittest.main()
